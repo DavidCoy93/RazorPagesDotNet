@@ -1,0 +1,87 @@
+﻿
+@page
+@using WebApplication1.Entities
+@model FormExcelModel
+@{
+    var headersExcel = ViewData["headersList"] as List<string>;
+    var personaList = ViewData["personaList"] as List<Persona>;
+}
+
+
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-3">
+                @* <label for="name">Nombre</label>
+                <input class="form-control" type="text" name="name" id="name" /> *@
+                @Html.LabelFor(n => n.name)
+                @Html.TextBoxFor(x => x.name, new { @class = "form-control", @type = "text" })
+                @Html.ValidationMessageFor(x => x.name,null,new { style="color: red;" })
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                @* <label for="age">Edad</label>
+                <input class="form-control" type="number" name="age" id="age" /> *@
+                @Html.LabelFor(n => n.age)
+                @Html.TextBoxFor(x => x.age, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(x => x.age, null, new { style = "color: red;" })
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <label>Archivo Excel</label>
+                <input class="form-control" type="file" asp-for="excelFile" />
+                @Html.ValidationMessageFor(x => x.excelFile, null, new { style = "color: red;" })
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="birthDate">Fecha de nacimiento</label>
+                <input type="text" id="birthDate" class="form-control" asp-for="birthDate" />
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                @Html.LabelFor(x => x.isMarried, "Es casado")
+                @Html.CheckBoxFor(x => x.isMarried, new { @class = "form-check" })
+            </div>
+
+            <div class="col-12 col-md-3 offset-md-9">
+                <button type="submit" class="btn btn-primary" style="width: 100%;" asp-page-handler="Submit">Guardar</button>
+            </div>
+        </div>
+    </form>
+    @if ((headersExcel != null && headersExcel.Count() > 0) && (personaList != null && personaList.Count() > 0))
+    {
+        <div class="row">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        @foreach (string header in headersExcel) 
+                        {
+                            <th>@header</th>
+                        }
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int counter = 0;
+                        foreach (Persona p in personaList)
+                        {
+                            <tr>
+                                <td>@p.Nombre</td>
+                                <td>@p.Edad</td>
+                                <td>@p.Domicilio</td>
+                                <td>@p.FechaNacimiento.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a asp-page-handler="PersonaJson" asp-route-indice="@counter">@counter</a>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        $("#birthDate").datepicker({dateFormat: "dd/mm/yy"});
+    })
+</script>
+
